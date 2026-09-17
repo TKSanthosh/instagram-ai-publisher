@@ -20,7 +20,13 @@ export class InstagramService {
     this.accessToken = options.accessToken || '';
     this.userId = options.userId || '';
     this.apiVersion = options.apiVersion || 'v22.0';
-    this.baseUrl = options.baseUrl || 'https://graph.facebook.com';
+
+    // Auto-detect API host: Instagram User Access Tokens (starting with IG) use graph.instagram.com
+    const defaultHost = this.accessToken.startsWith('IG')
+      ? 'https://graph.instagram.com'
+      : 'https://graph.facebook.com';
+
+    this.baseUrl = options.baseUrl || process.env.INSTAGRAM_API_BASE_URL || defaultHost;
     this.maxRetries = options.maxRetries !== undefined ? options.maxRetries : 3;
     this.timeoutMs = options.timeoutMs || 30000;
   }
