@@ -61,9 +61,8 @@ export function loadConfig() {
 
     // Post / Content Configuration
     post: {
-      caption:
-        process.env.POST_CAPTION ||
-        'Exploring the cutting-edge intersection of AI and creativity 🚀✨ #AI #Innovation #TechFuture',
+      caption: process.env.POST_CAPTION || '',
+      customCaption: Boolean(process.env.POST_CAPTION),
       imageWidth: parseIntSafe(process.env.IMAGE_WIDTH, 1080),
       imageHeight: parseIntSafe(process.env.IMAGE_HEIGHT, 1350),
       aspectRatio: process.env.IMAGE_ASPECT_RATIO || '4:5',

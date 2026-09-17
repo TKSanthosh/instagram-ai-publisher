@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import { loadConfig } from './config/env.js';
 import { logger } from './utils/logger.js';
 import { generatePrompt } from './content/prompt-generator.js';
+import { generateCaption } from './content/caption-generator.js';
 import { validateImageForInstagram } from './utils/validation.js';
 import { GeminiService } from './services/gemini.service.js';
 import { StorageService } from './services/storage.service.js';
@@ -50,17 +51,24 @@ export async function runPublisher(customConfig = null) {
 
   const stateService = StateService.create(config, storageService);
 
-  // 3. Generate Content Prompt
+  // 3. Generate Content Prompt for THIMMA KANNAN SHOP
   logger.stage('GENERATING_PROMPT');
-  const { prompt, hash: promptHash, subject } = generatePrompt({
+  const content = generatePrompt({
     aspectRatio: config.post.aspectRatio,
   });
-  logger.info('Prompt generated successfully.', { subject, promptHash });
-  logger.debug('Prompt text:', { prompt });
+  logger.info(
+    `Generated content prompt for '${content.brand}' [Theme: '${content.theme}'].`,
+    {
+      brand: content.brand,
+      theme: content.theme,
+      promptHash: content.hash,
+    }
+  );
+  logger.debug('Prompt text:', { prompt: content.prompt });
 
   // 4. Check Idempotency
   logger.stage('CHECKING_IDEMPOTENCY');
-  const duplicateCheck = await stateService.checkDuplicate(promptHash);
+  const duplicateCheck = await stateService.checkDuplicate(content.hash);
   if (duplicateCheck.isDuplicate) {
     logger.warn('Duplicate prompt detected within idempotency window. Skipping to prevent duplicate post.', {
       lastPublished: duplicateCheck.lastPublished,
@@ -68,14 +76,14 @@ export async function runPublisher(customConfig = null) {
     return {
       status: 'SKIPPED_DUPLICATE',
       executionId,
-      promptHash,
+      promptHash: content.hash,
       reason: 'Prompt was recently published.',
     };
   }
 
   // 5. Call Gemini Image Generation API (Nano Banana)
   logger.stage('GENERATING_IMAGE');
-  const { buffer: imageBuffer, mimeType } = await geminiService.generateImage(prompt, {
+  const { buffer: imageBuffer, mimeType } = await geminiService.generateImage(content.prompt, {
     aspectRatio: config.post.aspectRatio,
   });
   logger.stage('IMAGE_GENERATED', { bytes: imageBuffer.length, mimeType });
@@ -90,33 +98,49 @@ export async function runPublisher(customConfig = null) {
     logger.warn('Image validation warnings for Instagram API:', imageValidation.errors);
   }
 
-  // 6. Upload Image to Storage and obtain public HTTPS URL
+  // 6. Generate Unique Instagram Caption based on theme and brand
+  logger.stage('GENERATING_CAPTION');
+  const caption = config.post.customCaption
+    ? config.post.caption
+    : generateCaption({
+        brand: content.brand,
+        theme: content.theme,
+        contentContext: content.imageContext || content.prompt,
+      });
+  logger.stage('CAPTION_GENERATED', { length: caption.length });
+  logger.info(`Generated Instagram Caption:\n${caption}`);
+
+  // 7. Upload Image to Storage and obtain public HTTPS URL
   logger.stage('UPLOADING_IMAGE');
-  const { url: imageUrl, key: storageKey } = await storageService.uploadImage(imageBuffer, {
+  const { url: imageUrl, path: storagePath } = await storageService.uploadImage(imageBuffer, {
     mimeType,
   });
-  logger.stage('IMAGE_UPLOADED', { storageKey, imageUrl });
+  logger.stage('IMAGE_UPLOADED', { storagePath, imageUrl });
 
-  // 7. Handle DRY RUN Mode
+  // 8. Handle DRY RUN Mode
   if (config.dryRun) {
     logger.stage('DRY_RUN_COMPLETED');
     console.log('\n======================================================');
-    console.log('                 DRY RUN SUCCESSFUL                   ');
+    console.log('                INSTAGRAM AI PUBLISHER                ');
+    console.log('                 (DRY RUN SUCCESSFUL)                 ');
     console.log('======================================================');
-    console.log(`Execution ID  : ${executionId}`);
-    console.log(`Gemini Model  : ${config.gemini.model}`);
-    console.log(`Image Size    : ${(imageBuffer.length / 1024).toFixed(1)} KB`);
-    console.log(`Image URL     : ${imageUrl}`);
-    console.log(`Caption       : ${config.post.caption}`);
-    console.log('Instagram API : Publishing skipped due to DRY_RUN=true');
+    console.log(`Execution ID : ${executionId}`);
+    console.log(`Brand        : ${content.brand}`);
+    console.log(`Theme        : ${content.theme}`);
+    console.log(`Gemini Model : ${config.gemini.model}`);
+    console.log(`Image Size   : ${(imageBuffer.length / 1024).toFixed(1)} KB`);
+    console.log('\nCaption:\n' + caption);
+    console.log(`\nImage URL    : ${imageUrl}`);
+    console.log('Instagram API: Publishing skipped because DRY_RUN=true');
     console.log('======================================================\n');
 
     await stateService.recordPublication({
       executionId,
       mediaId: 'dry-run-skipped',
-      promptHash,
+      promptHash: content.hash,
       imageUrl,
-      prompt,
+      prompt: content.prompt,
+      caption,
       isDryRun: true,
     });
 
@@ -124,37 +148,40 @@ export async function runPublisher(customConfig = null) {
       status: 'DRY_RUN_SUCCESS',
       executionId,
       imageUrl,
-      storageKey,
+      caption,
+      brand: content.brand,
+      theme: content.theme,
     };
   }
 
-  // 8. Verify Instagram Account Access
+  // 9. Verify Instagram Account Access
   logger.stage('VERIFYING_ACCOUNT');
   const account = await instagramService.getInstagramAccount();
 
-  // 9. Create Instagram Media Container
+  // 10. Create Instagram Media Container
   logger.stage('CREATING_INSTAGRAM_MEDIA');
-  const container = await instagramService.createMediaContainer(imageUrl, config.post.caption);
+  const container = await instagramService.createMediaContainer(imageUrl, caption);
   logger.stage('MEDIA_CREATED', { containerId: container.id });
 
-  // 10. Wait for Media Processing (Safe polling)
+  // 11. Wait for Media Processing (Safe polling)
   logger.stage('CHECKING_MEDIA_STATUS');
   await instagramService.waitForMediaContainerReady(container.id);
 
-  // 11. Publish Media Container
+  // 12. Publish Media Container
   logger.stage('PUBLISHING_MEDIA');
   const publishResult = await instagramService.publishMedia(container.id);
   const mediaId = publishResult.id;
   logger.stage('PUBLISHED', { mediaId });
 
-  // 12. Record Successful State for Idempotency
+  // 13. Record Successful State for Idempotency
   logger.stage('RECORDING_STATE');
   await stateService.recordPublication({
     executionId,
     mediaId,
-    promptHash,
+    promptHash: content.hash,
     imageUrl,
-    prompt,
+    prompt: content.prompt,
+    caption,
     isDryRun: false,
   });
 
@@ -164,11 +191,28 @@ export async function runPublisher(customConfig = null) {
     account: account.username || account.id,
   });
 
+  console.log('\n======================================================');
+  console.log('                INSTAGRAM AI PUBLISHER                ');
+  console.log('======================================================');
+  console.log(`Execution ID : ${executionId}`);
+  console.log(`Brand        : ${content.brand}`);
+  console.log(`Theme        : ${content.theme}`);
+  console.log(`Gemini Model : ${config.gemini.model}`);
+  console.log(`Image Size   : ${(imageBuffer.length / 1024).toFixed(1)} KB`);
+  console.log('\nCaption:\n' + caption);
+  console.log(`\nImage URL    : ${imageUrl}`);
+  console.log('Instagram    : Published');
+  console.log(`Media ID     : ${mediaId}`);
+  console.log('======================================================\n');
+
   return {
     status: 'SUCCESS',
     executionId,
     mediaId,
     imageUrl,
+    caption,
+    brand: content.brand,
+    theme: content.theme,
   };
 }
 

@@ -1,14 +1,157 @@
 {
-  "topic": "technology",
-  "theme": "artificial intelligence and future innovation",
-  "style": "modern professional digital art, sleek aesthetic, cinematic lighting, 8k resolution, crisp detail",
-  "aspectRatio": "4:5",
-  "language": "English",
-  "mood": "inspirational, sophisticated, forward-thinking",
-  "subjects": [
-    "glowing holographic neural network interface seamlessly intertwined with clean modern architecture",
-    "elegant abstract representation of deep learning data streams flowing into creative ideas",
-    "futuristic designer workspace bathed in soft dawn light with subtle AI holographic projections"
+  "brand": {
+    "name": "THIMMA KANNAN SHOP",
+    "displayName": "THIMMA KANNAN SHOP",
+    "industry": "Indian Retail Store",
+    "description": "A trusted retail destination known for quality, variety, and welcoming customer shopping experience.",
+    "assets": {
+      "logoUrl": null,
+      "storefrontPhotoUrl": null,
+      "brandColors": [],
+      "address": null,
+      "phone": null,
+      "website": null,
+      "products": [],
+      "activeOffers": []
+    }
+  },
+  "content": {
+    "purpose": "Instagram promotional content",
+    "tone": [
+      "premium",
+      "trustworthy",
+      "welcoming",
+      "friendly"
+    ],
+    "language": "English",
+    "aspectRatio": "4:5",
+    "resolution": "1080x1350",
+    "visualStyle": "photorealistic commercial advertising, warm ambient lighting, clean composition, professional Indian retail branding"
+  },
+  "themes": [
+    "storefront promotion",
+    "product showcase",
+    "new arrivals",
+    "shopping experience",
+    "festival promotion",
+    "seasonal promotion",
+    "special offer",
+    "brand awareness",
+    "customer experience",
+    "general store promotion"
   ],
-  "negativePrompt": "blurry, low quality, distorted anatomy, text artifacts, watermarks, bad proportions, overexposed"
+  "schedule": {
+    "0": "general store promotion",
+    "1": "storefront promotion",
+    "2": "product showcase",
+    "3": "new arrivals",
+    "4": "shopping experience",
+    "5": "special offer",
+    "6": "festival promotion"
+  },
+  "themeVisuals": {
+    "storefront promotion": "Inviting exterior view of THIMMA KANNAN SHOP with a sleek modern signboard proudly showing 'THIMMA KANNAN SHOP', warm ambient lighting, clean glass entrance, and welcoming evening atmosphere.",
+    "product showcase": "Impeccably organized retail shelves inside THIMMA KANNAN SHOP, showcasing high quality everyday essentials with neat product packaging, clear displays, and subtle 'THIMMA KANNAN SHOP' branded elements.",
+    "new arrivals": "A featured display section inside THIMMA KANNAN SHOP highlighting fresh new arrivals on clean polished display tables with soft spotlighting and branded signage 'THIMMA KANNAN SHOP'.",
+    "shopping experience": "A bright, spacious aisle inside THIMMA KANNAN SHOP, showing organized retail shelves and cheerful shoppers in the background enjoying a pleasant shopping journey.",
+    "festival promotion": "A tastefully decorated Indian retail setting at THIMMA KANNAN SHOP celebrating festive traditions with elegant decor, warm golden illumination, and prominent 'THIMMA KANNAN SHOP' signage.",
+    "seasonal promotion": "A vibrant seasonal retail display inside THIMMA KANNAN SHOP, beautifully curated with fresh stock, natural lighting, and refined brand signage 'THIMMA KANNAN SHOP'.",
+    "special offer": "A dedicated promotional display area in THIMMA KANNAN SHOP, designed with elegant banners and organized featured collections bearing the proud store name 'THIMMA KANNAN SHOP'.",
+    "brand awareness": "A cinematic hero shot of the interior of THIMMA KANNAN SHOP emphasizing premium retail design, high cleanliness, and a grand storefront sign reading 'THIMMA KANNAN SHOP'.",
+    "customer experience": "Warm, welcoming atmosphere at THIMMA KANNAN SHOP with friendly customer service counter, organized displays, and a prominent 'THIMMA KANNAN SHOP' wall emblem in the background.",
+    "general store promotion": "A comprehensive panoramic commercial view of THIMMA KANNAN SHOP demonstrating wide aisles, rich variety of merchandise, and glowing 'THIMMA KANNAN SHOP' marquee."
+  },
+  "caption": {
+    "maxCharacters": 2200,
+    "preferredCharacters": 500,
+    "includeHashtags": true
+  },
+  "hashtags": {
+    "default": [
+      "#ThimmaKannanShop",
+      "#Retail",
+      "#Shopping",
+      "#LocalBusiness",
+      "#QualityAndValue"
+    ],
+    "storefront promotion": [
+      "#ThimmaKannanShop",
+      "#Storefront",
+      "#LocalShopping",
+      "#RetailStore",
+      "#ShopLocal"
+    ],
+    "product showcase": [
+      "#ThimmaKannanShop",
+      "#ProductShowcase",
+      "#EverydayEssentials",
+      "#QualityProducts",
+      "#Retail"
+    ],
+    "new arrivals": [
+      "#ThimmaKannanShop",
+      "#NewArrivals",
+      "#FreshStock",
+      "#RetailExperience",
+      "#Shopping"
+    ],
+    "shopping experience": [
+      "#ThimmaKannanShop",
+      "#ShoppingExperience",
+      "#CustomerFirst",
+      "#HappyShopping",
+      "#LocalBusiness"
+    ],
+    "festival promotion": [
+      "#ThimmaKannanShop",
+      "#FestivalShopping",
+      "#CelebrationTime",
+      "#FestiveVibes",
+      "#Shopping"
+    ],
+    "seasonal promotion": [
+      "#ThimmaKannanShop",
+      "#SeasonalShopping",
+      "#FreshArrivals",
+      "#RetailStyle",
+      "#LocalShop"
+    ],
+    "special offer": [
+      "#ThimmaKannanShop",
+      "#SpecialOffer",
+      "#GreatValue",
+      "#ShoppingDestination",
+      "#Retail"
+    ],
+    "brand awareness": [
+      "#ThimmaKannanShop",
+      "#TrustedBrand",
+      "#QualityShopping",
+      "#YourLocalStore",
+      "#RetailHeritage"
+    ],
+    "customer experience": [
+      "#ThimmaKannanShop",
+      "#CustomerCare",
+      "#WelcomingService",
+      "#ShopWithUs",
+      "#LocalRetail"
+    ],
+    "general store promotion": [
+      "#ThimmaKannanShop",
+      "#OneStopShop",
+      "#DailyShopping",
+      "#ConvenienceAndQuality",
+      "#Retail"
+    ]
+  },
+  "prohibitedClaims": [
+    "lowest price",
+    "best shop",
+    "number one",
+    "100% guaranteed",
+    "cheapest",
+    "fake discount"
+  ],
+  "negativePrompt": "blurry, low quality, distorted typography, misspelled brand name, watermarks, fake logos, garbled text, overcrowded, messy shelves, dark or gloomy lighting"
 }

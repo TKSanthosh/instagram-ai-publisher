@@ -101,9 +101,11 @@ describe('Publisher Workflow Orchestrator', () => {
       username: 'tech_creator_ai',
     });
 
-    vi.spyOn(InstagramService.prototype, 'createMediaContainer').mockResolvedValue({
-      id: 'container-9999',
-    });
+    const containerSpy = vi
+      .spyOn(InstagramService.prototype, 'createMediaContainer')
+      .mockResolvedValue({
+        id: 'container-9999',
+      });
 
     vi.spyOn(InstagramService.prototype, 'waitForMediaContainerReady').mockResolvedValue(undefined);
 
@@ -119,6 +121,11 @@ describe('Publisher Workflow Orchestrator', () => {
 
     expect(result.status).toBe('SUCCESS');
     expect(result.mediaId).toBe('media-post-8888');
+    expect(result.caption).toContain('THIMMA KANNAN SHOP');
+    expect(containerSpy).toHaveBeenCalledWith(
+      expect.stringContaining('https://'),
+      expect.stringContaining('THIMMA KANNAN SHOP')
+    );
 
     // Verify state was saved
     const state = await memoryStore.read();
