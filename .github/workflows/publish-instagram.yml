@@ -1,0 +1,75 @@
+name: Publish Instagram AI Post
+
+on:
+  # Manual dispatch with option to trigger dry-run or real publish
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in DRY_RUN mode (generates & stores image without posting to Instagram)'
+        required: true
+        type: boolean
+        default: true
+      model_override:
+        description: 'Optional Gemini Image Model override (e.g. gemini-2.5-flash-image)'
+        required: false
+        type: string
+        default: ''
+
+  # Scheduled automated publishing (e.g., daily at 12:00 UTC / 5:30 PM IST)
+  schedule:
+    - cron: '0 12 * * *'
+
+# Grant least-privilege permissions
+permissions:
+  contents: read
+
+concurrency:
+  group: instagram-publishing
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Generate and Publish Post
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Unit Tests
+        run: npm test
+
+      - name: Run Instagram AI Publisher
+        env:
+          # Mode control (workflow input if manual, false if scheduled)
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+
+          # Google Gemini Configuration
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_IMAGE_MODEL: ${{ inputs.model_override != '' && inputs.model_override || secrets.GEMINI_IMAGE_MODEL || 'gemini-2.5-flash-image' }}
+
+          # Meta Instagram Graph API Configuration
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+          META_GRAPH_API_VERSION: ${{ vars.META_GRAPH_API_VERSION || 'v22.0' }}
+
+          # Supabase Storage Configuration
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_STORAGE_BUCKET: ${{ vars.SUPABASE_STORAGE_BUCKET || secrets.SUPABASE_STORAGE_BUCKET || 'instagram-images' }}
+          SUPABASE_USE_SIGNED_URL: ${{ vars.SUPABASE_USE_SIGNED_URL || 'false' }}
+
+          # Content & State Configuration
+          POST_CAPTION: ${{ vars.POST_CAPTION || secrets.POST_CAPTION }}
+          STATE_DRIVER: ${{ secrets.SUPABASE_URL != '' && 'supabase' || 'local' }}
+        run: node src/index.js

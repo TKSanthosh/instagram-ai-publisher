@@ -1,0 +1,42 @@
+{
+  "name": "instagram-ai-publisher",
+  "version": "1.0.0",
+  "description": "Production-ready backend automation for generating images with Google Gemini and publishing to Instagram via Meta Graph API",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/ tests/",
+    "lint:fix": "eslint src/ tests/ --fix",
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\" \"prompts/**/*.json\""
+  },
+  "keywords": [
+    "instagram",
+    "meta-graph-api",
+    "gemini",
+    "imagen-3",
+    "ai-image-generator",
+    "github-actions"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@google/genai": "^2.23.0",
+    "@supabase/supabase-js": "^2.109.0",
+    "dotenv": "^16.4.7",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "eslint": "^9.21.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.2",
+    "vitest": "^3.0.7"
+  }
+}

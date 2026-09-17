@@ -1,0 +1,14 @@
+{
+  "topic": "technology",
+  "theme": "artificial intelligence and future innovation",
+  "style": "modern professional digital art, sleek aesthetic, cinematic lighting, 8k resolution, crisp detail",
+  "aspectRatio": "4:5",
+  "language": "English",
+  "mood": "inspirational, sophisticated, forward-thinking",
+  "subjects": [
+    "glowing holographic neural network interface seamlessly intertwined with clean modern architecture",
+    "elegant abstract representation of deep learning data streams flowing into creative ideas",
+    "futuristic designer workspace bathed in soft dawn light with subtle AI holographic projections"
+  ],
+  "negativePrompt": "blurry, low quality, distorted anatomy, text artifacts, watermarks, bad proportions, overexposed"
+}
