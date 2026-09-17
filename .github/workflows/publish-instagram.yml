@@ -15,9 +15,9 @@ on:
         type: string
         default: ''
 
-  # Scheduled automated publishing (e.g., daily at 12:00 UTC / 5:30 PM IST)
-  schedule:
-    - cron: '0 12 * * *'
+  # Scheduled automated publishing (disabled)
+  # schedule:
+  #   - cron: '0 12 * * *'
 
 # Grant least-privilege permissions
 permissions:
